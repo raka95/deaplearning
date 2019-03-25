@@ -283,19 +283,50 @@
     \subsection{1-Packages}\label{packages}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}20}]:} \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
-         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
-         \PY{k+kn}{import} \PY{n+nn}{h5py}
-         \PY{k+kn}{import} \PY{n+nn}{scipy}
-         \PY{k+kn}{from} \PY{n+nn}{PIL} \PY{k}{import} \PY{n}{Image}
-         \PY{k+kn}{from} \PY{n+nn}{scipy} \PY{k}{import} \PY{n}{ndimage}
-         \PY{k+kn}{from} \PY{n+nn}{lr\PYZus{}utils} \PY{k}{import} \PY{n}{load\PYZus{}dataset}
-         
-         \PY{k+kn}{import} \PY{n+nn}{re}
-         
-         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+{\color{incolor}In [{\color{incolor}1}]:} \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+        \PY{k+kn}{import} \PY{n+nn}{h5py}
+        \PY{k+kn}{import} \PY{n+nn}{scipy}
+        \PY{k+kn}{from} \PY{n+nn}{PIL} \PY{k}{import} \PY{n}{Image}
+        \PY{k+kn}{from} \PY{n+nn}{scipy} \PY{k}{import} \PY{n}{ndimage}
+        \PY{k+kn}{from} \PY{n+nn}{lr\PYZus{}utils} \PY{k}{import} \PY{n}{load\PYZus{}dataset}
+        
+        \PY{k+kn}{import} \PY{n+nn}{re}
+        
+        \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
 \end{Verbatim}
 
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+/Users/raka/anaconda3/lib/python3.6/site-packages/h5py/\_\_init\_\_.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from .\_conv import register\_converters as \_register\_converters
+
+    \end{Verbatim}
+
+    \section{\%load lr\_utils.py}\label{load-lr_utils.py}
+
+```python import numpy as np import h5py
+
+def load\_dataset(): train\_dataset =
+h5py.File('datasets/train\_catvnoncat.h5', "r") train\_set\_x\_orig =
+np.array(train\_dataset{[}"train\_set\_x"{]}{[}:{]}) \# your train set
+features train\_set\_y\_orig =
+np.array(train\_dataset{[}"train\_set\_y"{]}{[}:{]}) \# your train set
+labels
+
+\begin{verbatim}
+test_dataset = h5py.File('datasets/test_catvnoncat.h5', "r")
+test_set_x_orig = np.array(test_dataset["test_set_x"][:]) # your test set features
+test_set_y_orig = np.array(test_dataset["test_set_y"][:]) # your test set labels
+
+classes = np.array(test_dataset["list_classes"][:]) # the list of classes
+
+train_set_y_orig = train_set_y_orig.reshape((1, train_set_y_orig.shape[0]))
+test_set_y_orig = test_set_y_orig.reshape((1, test_set_y_orig.shape[0]))
+
+return train_set_x_orig, train_set_y_orig, test_set_x_orig, test_set_y_orig, classes
+```
+\end{verbatim}
 
     \subsection{2 - Overview of the Problem
 set}\label{overview-of-the-problem-set}
@@ -311,8 +342,8 @@ You will build a simple image-recognition algorithm that can correctly
 classify pictures as cat or non-cat.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}2}]:} \PY{c+c1}{\PYZsh{} Loading the data (cat/non\PYZhy{}cat)}
-        \PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{p}{,} \PY{n}{train\PYZus{}set\PYZus{}y}\PY{p}{,} \PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{p}{,} \PY{n}{test\PYZus{}set\PYZus{}y}\PY{p}{,} \PY{n}{classes} \PY{o}{=} \PY{n}{load\PYZus{}dataset}\PY{p}{(}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}72}]:} \PY{c+c1}{\PYZsh{} Loading the data (cat/non\PYZhy{}cat)}
+         \PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{p}{,} \PY{n}{train\PYZus{}set\PYZus{}y}\PY{p}{,} \PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{p}{,} \PY{n}{test\PYZus{}set\PYZus{}y}\PY{p}{,}\PY{n}{classes} \PY{o}{=} \PY{n}{load\PYZus{}dataset}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -320,10 +351,12 @@ classify pictures as cat or non-cat.
 representing an image.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}3}]:} \PY{c+c1}{\PYZsh{} Example of a picture}
-        \PY{n}{index} \PY{o}{=} \PY{l+m+mi}{25}
-        \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{)}
-        \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{y = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{index}\PY{p}{]}\PY{p}{)} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{, it}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{s a }\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n}{classes}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{squeeze}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{index}\PY{p}{]}\PY{p}{)}\PY{p}{]}\PY{o}{.}\PY{n}{decode}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{utf\PYZhy{}8}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+}  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{ picture.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}73}]:} \PY{c+c1}{\PYZsh{} Example of a picture}
+         \PY{n}{index} \PY{o}{=} \PY{l+m+mi}{25}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{p}{[}\PY{n}{index}\PY{p}{]}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{y = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{index}\PY{p}{]}\PY{p}{)} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{, it}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{s a }\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{\PYZdq{}} 
+                \PY{o}{+} \PY{n}{classes}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{squeeze}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{index}\PY{p}{]}\PY{p}{)}\PY{p}{]}\PY{o}{.}\PY{n}{decode}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{utf\PYZhy{}8}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+}
+                \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{ picture.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -333,12 +366,12 @@ y = [1], it's a 'cat' picture.
     \end{Verbatim}
 
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_5_1.png}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_6_1.png}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}26}]:} \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}set\PYZus{}x\PYZus{}orig.shape:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{shape}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}set\PYZus{}y.shape:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{o}{.}\PY{n}{shape}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{classes:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{classes}\PY{p}{,}\PY{n+nb}{type}\PY{p}{(}\PY{n}{classes}\PY{p}{)}\PY{p}{,}\PY{n}{classes}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}74}]:} \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}set\PYZus{}x\PYZus{}orig.shape:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{shape}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}set\PYZus{}y.shape:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{o}{.}\PY{n}{shape}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{classes:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{classes}\PY{p}{,}\PY{n+nb}{type}\PY{p}{(}\PY{n}{classes}\PY{p}{)}\PY{p}{,}\PY{n}{classes}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -350,7 +383,7 @@ train\_set\_x\_orig.shape: (209, 64, 64, 3)
     \end{Verbatim}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}28}]:} \PY{n}{m\PYZus{}train}\PY{o}{=}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+{\color{incolor}In [{\color{incolor}75}]:} \PY{n}{m\PYZus{}train}\PY{o}{=}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
          \PY{n}{m\PYZus{}test}\PY{o}{=}\PY{n}{test\PYZus{}set\PYZus{}y}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
          \PY{n}{num\PYZus{}px}\PY{o}{=}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
          
@@ -384,8 +417,11 @@ column represents a flattened image. There should be m\_train
 (respectively m\_test) columns.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}33}]:} \PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}flatten}\PY{o}{=}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{p}{(}\PY{n}{num\PYZus{}px}\PY{o}{*}\PY{n}{num\PYZus{}px}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{,}\PY{n}{m\PYZus{}train}\PY{p}{)}\PY{p}{)}
-         \PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}flatten}\PY{o}{=}\PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{p}{(}\PY{n}{num\PYZus{}px}\PY{o}{*}\PY{n}{num\PYZus{}px}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{,}\PY{n}{m\PYZus{}test}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}78}]:} \PY{c+c1}{\PYZsh{} train\PYZus{}set\PYZus{}x\PYZus{}flatten=train\PYZus{}set\PYZus{}x\PYZus{}orig.reshape((num\PYZus{}px*num\PYZus{}px*3,m\PYZus{}train))}
+         \PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}flatten} \PY{o}{=} \PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+         \PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}flatten} \PY{o}{=} \PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}orig}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+         
+         \PY{c+c1}{\PYZsh{} test\PYZus{}set\PYZus{}x\PYZus{}flatten=test\PYZus{}set\PYZus{}x\PYZus{}orig.reshape((num\PYZus{}px*num\PYZus{}px*3,m\PYZus{}test))}
          \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{train\PYZus{}set\PYZus{}x\PYZus{}flatten shape: }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}flatten}\PY{o}{.}\PY{n}{shape}\PY{p}{)}\PY{p}{)}
          \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{train\PYZus{}set\PYZus{}y shape: }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}y}\PY{o}{.}\PY{n}{shape}\PY{p}{)}\PY{p}{)}
          \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{test\PYZus{}set\PYZus{}x\PYZus{}flatten shape: }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}flatten}\PY{o}{.}\PY{n}{shape}\PY{p}{)}\PY{p}{)}
@@ -399,7 +435,7 @@ train\_set\_x\_flatten shape: (12288, 209)
 train\_set\_y shape: (1, 209)
 test\_set\_x\_flatten shape: (12288, 50)
 test\_set\_y shape: (1, 50)
-sanity check after reshaping: [17 71 49 38 70]
+sanity check after reshaping: [17 31 56 22 33]
 
     \end{Verbatim}
 
@@ -418,7 +454,7 @@ channel).
 Let's standardize our dataset.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}35}]:} \PY{n}{train\PYZus{}set\PYZus{}x} \PY{o}{=} \PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}flatten} \PY{o}{/} \PY{l+m+mf}{255.}
+{\color{incolor}In [{\color{incolor}79}]:} \PY{n}{train\PYZus{}set\PYZus{}x} \PY{o}{=} \PY{n}{train\PYZus{}set\PYZus{}x\PYZus{}flatten} \PY{o}{/} \PY{l+m+mf}{255.}
          \PY{n}{test\PYZus{}set\PYZus{}x} \PY{o}{=} \PY{n}{test\PYZus{}set\PYZus{}x\PYZus{}flatten} \PY{o}{/} \PY{l+m+mf}{255.}
 \end{Verbatim}
 
@@ -429,6 +465,512 @@ Common steps for pre-processing a new dataset are: - Figure out the
 dimensions and shapes of the problem (m\_train, m\_test, num\_px, ...) -
 Reshape the datasets such that each example is now a vector of size
 (num\_px * num\_px * 3, 1) - "Standardize" the data
+
+    \subsection{3 - General Architecture of the learning
+algorithm}\label{general-architecture-of-the-learning-algorithm}
+
+It's time to design a simple algorithm to distinguish cat images from
+non-cat images.
+
+You will build a Logistic Regression, using a Neural Network mindset.
+The following Figure explains why \textbf{Logistic Regression is
+actually a very simple Neural Network!}
+
+\textbf{Mathematical expression of the algorithm}:
+
+For one example \(x^{(i)}\): \[z^{(i)} = w^T x^{(i)} + b \tag{1}\]
+\[\hat{y}^{(i)} = a^{(i)} = sigmoid(z^{(i)})\tag{2}\]
+\[ \mathcal{L}(a^{(i)}, y^{(i)}) =  - y^{(i)}  \log(a^{(i)}) - (1-y^{(i)} )  \log(1-a^{(i)})\tag{3}\]
+
+The cost is then computed by summing over all training examples:
+\[ J = \frac{1}{m} \sum_{i=1}^m \mathcal{L}(a^{(i)}, y^{(i)})\tag{6}\]
+
+\textbf{Key steps}: In this exercise, you will carry out the following
+steps: - Initialize the parameters of the model - Learn the parameters
+for the model by minimizing the cost\\
+- Use the learned parameters to make predictions (on the test set) -
+Analyse the results and conclude
+
+    \subsection{4 - Building the parts of our
+algorithm}\label{building-the-parts-of-our-algorithm}
+
+The main steps for building a Neural Network are: 1. Define the model
+structure (such as number of input features) 2. Initialize the model's
+parameters 3. Loop: - Calculate current loss (forward propagation) -
+Calculate current gradient (backward propagation) - Update parameters
+(gradient descent)
+
+You often build 1-3 separately and integrate them into one function we
+call \texttt{model()}.
+
+\subsubsection{4.1 - Helper functions}\label{helper-functions}
+
+\textbf{Exercise}: Using your code from "Python Basics", implement
+\texttt{sigmoid()}. As you've seen in the figure above, you need to
+compute \(sigmoid( w^T x + b)\) to make predictions.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}80}]:} \PY{k}{def} \PY{n+nf}{sigmoid}\PY{p}{(}\PY{n}{z}\PY{p}{)}\PY{p}{:}
+             \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{z}\PY{p}{)}\PY{p}{)}
+             \PY{k}{return} \PY{n}{s}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}81}]:} \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sigmoid([0, 2]) = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{sigmoid}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+sigmoid([0, 2]) = [0.5        0.88079708]
+
+    \end{Verbatim}
+
+    \subsubsection{4.2 - Initializing
+parameters}\label{initializing-parameters}
+
+\textbf{Exercise:} Implement parameter initialization in the cell below.
+You have to initialize w as a vector of zeros. If you don't know what
+numpy function to use, look up np.zeros() in the Numpy library's
+documentation.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}82}]:} \PY{k}{def} \PY{n+nf}{initialize\PYZus{}with\PYZus{}zeros}\PY{p}{(}\PY{n}{dim}\PY{p}{)}\PY{p}{:}
+             \PY{n}{w}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{dim}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+             \PY{n}{b}\PY{o}{=}\PY{l+m+mi}{0}
+             
+             \PY{k}{assert}\PY{p}{(}\PY{n}{w}\PY{o}{.}\PY{n}{shape}\PY{o}{==}\PY{p}{(}\PY{n}{dim}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+             \PY{k}{assert}\PY{p}{(}\PY{n+nb}{isinstance}\PY{p}{(}\PY{n}{b}\PY{p}{,}\PY{n+nb}{float}\PY{p}{)} \PY{o+ow}{or} \PY{n+nb}{isinstance}\PY{p}{(}\PY{n}{b}\PY{p}{,}\PY{n+nb}{int}\PY{p}{)}\PY{p}{)}
+             \PY{k}{return} \PY{n}{w}\PY{p}{,}\PY{n}{b}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}83}]:} \PY{n}{dim} \PY{o}{=} \PY{l+m+mi}{2}
+         \PY{n}{w}\PY{p}{,} \PY{n}{b} \PY{o}{=} \PY{n}{initialize\PYZus{}with\PYZus{}zeros}\PY{p}{(}\PY{n}{dim}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{w = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{w}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{b = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{b}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+w = [[0.]
+ [0.]]
+b = 0
+
+    \end{Verbatim}
+
+    For image inputs, w will be of shape (num\_px \(\times\) num\_px
+\(\times\) 3, 1).
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}1}]:} \PY{k}{def} \PY{n+nf}{propagate} \PY{p}{(}\PY{n}{w}\PY{p}{,}\PY{n}{b}\PY{p}{,}\PY{n}{X}\PY{p}{,}\PY{n}{Y}\PY{p}{)}\PY{p}{:}
+            \PY{n}{m}\PY{o}{=}\PY{n}{X}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+        
+            \PY{n}{A}\PY{o}{=}\PY{n}{sigmoid}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{w}\PY{o}{.}\PY{n}{T}\PY{p}{,}\PY{n}{X}\PY{p}{)}\PY{o}{+}\PY{n}{b}\PY{p}{)}
+            \PY{n}{J}\PY{o}{=}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{m}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{Y}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{Y}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{A}\PY{p}{)}\PY{p}{)}
+            
+            \PY{n}{dw}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{m}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{X}\PY{p}{,}\PY{p}{(}\PY{n}{A}\PY{o}{\PYZhy{}}\PY{n}{Y}\PY{p}{)}\PY{o}{.}\PY{n}{T}\PY{p}{)}
+            \PY{n}{db}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{m}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{A}\PY{o}{\PYZhy{}}\PY{n}{Y}\PY{p}{)}
+            
+            \PY{n}{grads}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dw}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{n}{dw}\PY{p}{,}
+                  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{db}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{n}{db}\PY{p}{\PYZcb{}}
+            \PY{n}{J}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{squeeze}\PY{p}{(}\PY{n}{J}\PY{p}{)}
+            \PY{k}{assert}\PY{p}{(}\PY{n}{dw}\PY{o}{.}\PY{n}{shape}\PY{o}{==}\PY{n}{w}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+            \PY{k}{assert}\PY{p}{(}\PY{n}{db}\PY{o}{.}\PY{n}{dtype}\PY{o}{==}\PY{n+nb}{float}\PY{p}{)}
+            \PY{k}{assert}\PY{p}{(}\PY{n}{J}\PY{o}{.}\PY{n}{shape}\PY{o}{==}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+            
+            \PY{k}{return} \PY{n}{grads}\PY{p}{,} \PY{n}{J}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}85}]:} \PY{n}{w}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+         \PY{n}{grads}\PY{p}{,} \PY{n}{J} \PY{o}{=} \PY{n}{propagate}\PY{p}{(}\PY{n}{w}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dw = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{grads}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dw}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{db = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{grads}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{db}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cost = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+dw = [[0.99993216]
+ [1.99980262]]
+db = 0.49993523062470574
+cost = 6.000064773192205
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}86}]:} \PY{n}{X}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}86}]:} 4
+\end{Verbatim}
+            
+    \subsubsection{d) Optimization}\label{d-optimization}
+
+\begin{itemize}
+\tightlist
+\item
+  You have initialized your parameters.
+\item
+  You are also able to compute a cost function and its gradient.
+\item
+  Now, you want to update the parameters using gradient descent.
+\end{itemize}
+
+\textbf{Exercise:} Write down the optimization function. The goal is to
+learn \(w\) and \(b\) by minimizing the cost function \(J\). For a
+parameter \(\theta\), the update rule is \$ \theta = \theta -
+\alpha \text{ } d\theta\$, where \(\alpha\) is the learning rate.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}87}]:} \PY{k}{def} \PY{n+nf}{optimize}\PY{p}{(}\PY{n}{w}\PY{p}{,}\PY{n}{b}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{num\PYZus{}iterations}\PY{p}{,} \PY{n}{learning\PYZus{}rate}\PY{p}{,} \PY{n}{print\PYZus{}cost} \PY{o}{=} \PY{k+kc}{False}\PY{p}{)}\PY{p}{:}
+             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+         \PY{l+s+sd}{    This function optimizes w and b by running a gradient descent algorithm}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    Arguments:}
+         \PY{l+s+sd}{    w \PYZhy{}\PYZhy{} weights, a numpy array of size (num\PYZus{}px * num\PYZus{}px * 3, 1)}
+         \PY{l+s+sd}{    b \PYZhy{}\PYZhy{} bias, a scalar}
+         \PY{l+s+sd}{    X \PYZhy{}\PYZhy{} data of shape (num\PYZus{}px * num\PYZus{}px * 3, number of examples)}
+         \PY{l+s+sd}{    Y \PYZhy{}\PYZhy{} true \PYZdq{}label\PYZdq{} vector (containing 0 if non\PYZhy{}cat, 1 if cat), of shape (1, number of examples)}
+         \PY{l+s+sd}{    num\PYZus{}iterations \PYZhy{}\PYZhy{} number of iterations of the optimization loop}
+         \PY{l+s+sd}{    learning\PYZus{}rate \PYZhy{}\PYZhy{} learning rate of the gradient descent update rule}
+         \PY{l+s+sd}{    print\PYZus{}cost \PYZhy{}\PYZhy{} True to print the loss every 100 steps}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    Returns:}
+         \PY{l+s+sd}{    params \PYZhy{}\PYZhy{} dictionary containing the weights w and bias b}
+         \PY{l+s+sd}{    grads \PYZhy{}\PYZhy{} dictionary containing the gradients of the weights and bias with respect to the cost function}
+         \PY{l+s+sd}{    costs \PYZhy{}\PYZhy{} list of all the costs computed during the optimization, this will be used to plot the learning curve.}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    Tips:}
+         \PY{l+s+sd}{    You basically need to write down two steps and iterate through them:}
+         \PY{l+s+sd}{        1) Calculate the cost and the gradient for the current parameters. Use propagate().}
+         \PY{l+s+sd}{        2) Update the parameters using gradient descent rule for w and b.}
+         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+             \PY{n}{costs}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}iterations}\PY{p}{)}\PY{p}{:}
+                 
+                 \PY{n}{grads}\PY{p}{,} \PY{n}{J}\PY{o}{=}\PY{n}{propagate}\PY{p}{(}\PY{n}{w}\PY{p}{,}\PY{n}{b}\PY{p}{,}\PY{n}{X}\PY{p}{,}\PY{n}{Y}\PY{p}{)}
+                 
+                 \PY{n}{dw}\PY{o}{=}\PY{n}{grads}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dw}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+                 \PY{n}{db}\PY{o}{=}\PY{n}{grads}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{db}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+                 
+                 \PY{n}{w}\PY{o}{=}\PY{n}{w}\PY{o}{\PYZhy{}}\PY{n}{learning\PYZus{}rate}\PY{o}{*}\PY{n}{dw}
+                 \PY{n}{b}\PY{o}{=}\PY{n}{b}\PY{o}{\PYZhy{}}\PY{n}{learning\PYZus{}rate}\PY{o}{*}\PY{n}{db}
+                 
+                 \PY{k}{if} \PY{n}{i} \PY{o}{\PYZpc{}}\PY{k}{100}==0:
+                     \PY{n}{costs}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{J}\PY{p}{)}
+                 
+                 \PY{k}{if} \PY{n}{print\PYZus{}cost} \PY{o+ow}{and} \PY{n}{i}\PY{o}{\PYZpc{}}\PY{k}{100}==0:
+                     \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cost after iteration }\PY{l+s+si}{\PYZpc{}i}\PY{l+s+s2}{ : }\PY{l+s+si}{\PYZpc{}F}\PY{l+s+s2}{\PYZdq{}}\PY{o}{\PYZpc{}}\PY{p}{(}\PY{n}{i}\PY{p}{,}\PY{n}{J}\PY{p}{)}\PY{p}{)}
+             
+             \PY{n}{params}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{w}\PY{p}{,}
+                     \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{b}\PY{p}{\PYZcb{}}
+                 
+             \PY{n}{grads}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dw}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{n}{dw}\PY{p}{,}
+                    \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{db}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{n}{db}\PY{p}{\PYZcb{}}
+             \PY{k}{return} \PY{n}{params}\PY{p}{,} \PY{n}{grads}\PY{p}{,} \PY{n}{costs}
+                 
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}88}]:} \PY{n}{params}\PY{p}{,} \PY{n}{grads}\PY{p}{,} \PY{n}{costs} \PY{o}{=} \PY{n}{optimize}\PY{p}{(}\PY{n}{w}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{num\PYZus{}iterations}\PY{o}{=} \PY{l+m+mi}{100}\PY{p}{,} \PY{n}{learning\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.009}\PY{p}{,} \PY{n}{print\PYZus{}cost} \PY{o}{=} \PY{k+kc}{False}\PY{p}{)}
+         
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{w = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{params}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{w}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{b = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{params}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{b}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dw = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{grads}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dw}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{db = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{grads}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{db}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+w = [[0.1124579 ]
+ [0.23106775]]
+b = 1.5593049248448891
+dw = [[0.90158428]
+ [1.76250842]]
+db = 0.4304620716786828
+
+    \end{Verbatim}
+
+    \textbf{Exercise:} The previous function will output the learned w and
+b. We are able to use w and b to predict the labels for a dataset X.
+Implement the \texttt{predict()} function. There is two steps to
+computing predictions:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Calculate \(\hat{Y} = A = \sigma(w^T X + b)\)
+\item
+  Convert the entries of a into 0 (if activation \textless{}= 0.5) or 1
+  (if activation \textgreater{} 0.5), stores the predictions in a vector
+  \texttt{Y\_prediction}. If you wish, you can use an
+  \texttt{if}/\texttt{else} statement in a \texttt{for} loop (though
+  there is also a way to vectorize this).
+\end{enumerate}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}89}]:} \PY{k}{def} \PY{n+nf}{predict}\PY{p}{(}\PY{n}{w}\PY{p}{,}\PY{n}{b}\PY{p}{,}\PY{n}{X}\PY{p}{)}\PY{p}{:}
+             \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+         \PY{l+s+sd}{    Predict whether the label is 0 or 1 using learned logistic regression parameters (w, b)}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    Arguments:}
+         \PY{l+s+sd}{    w \PYZhy{}\PYZhy{} weights, a numpy array of size (num\PYZus{}px * num\PYZus{}px * 3, 1)}
+         \PY{l+s+sd}{    b \PYZhy{}\PYZhy{} bias, a scalar}
+         \PY{l+s+sd}{    X \PYZhy{}\PYZhy{} data of size (num\PYZus{}px * num\PYZus{}px * 3, number of examples)}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    Returns:}
+         \PY{l+s+sd}{    Y\PYZus{}prediction \PYZhy{}\PYZhy{} a numpy array (vector) containing all predictions (0/1) for the examples in X}
+         \PY{l+s+sd}{    \PYZsq{}\PYZsq{}\PYZsq{}}
+             
+             \PY{n}{m}\PY{o}{=}\PY{n}{X}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+             \PY{n}{Y\PYZus{}prediction}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{m}\PY{p}{)}\PY{p}{)}
+             \PY{n}{w}\PY{o}{=}\PY{n}{w}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n}{X}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+             
+             \PY{n}{A}\PY{o}{=}\PY{n}{sigmoid}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{w}\PY{o}{.}\PY{n}{T}\PY{p}{,}\PY{n}{X}\PY{p}{)}\PY{o}{+}\PY{n}{b}\PY{p}{)}
+             
+             \PY{p}{[}\PY{n+nb}{print}\PY{p}{(}\PY{n}{x}\PY{p}{)} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{A}\PY{p}{]}
+             
+             \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                 \PY{k}{if} \PY{n}{A}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{i}\PY{p}{]}\PY{o}{\PYZgt{}}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{:}
+                     \PY{n}{Y\PYZus{}prediction}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{i}\PY{p}{]}\PY{o}{=}\PY{l+m+mi}{1}
+                 \PY{k}{else}\PY{p}{:}
+                     \PY{n}{Y\PYZus{}prediction}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{i}\PY{p}{]}\PY{o}{=}\PY{l+m+mi}{0}
+                     
+             \PY{k}{assert}\PY{p}{(}\PY{n}{Y\PYZus{}prediction}\PY{o}{.}\PY{n}{shape} \PY{o}{==} \PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{m}\PY{p}{)}\PY{p}{)}
+             
+             \PY{k}{return} \PY{n}{Y\PYZus{}prediction}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}90}]:} \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{predictions = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{predict}\PY{p}{(}\PY{n}{w}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{X}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[0.99987661 0.99999386]
+predictions = [[1. 1.]]
+
+    \end{Verbatim}
+
+     \textbf{What to remember:} You've implemented several functions that: -
+Initialize (w,b) - Optimize the loss iteratively to learn parameters
+(w,b): - computing the cost and its gradient - updating the parameters
+using gradient descent - Use the learned (w,b) to predict the labels for
+a given set of examples
+
+    \subsection{5 - Merge all functions into a
+model}\label{merge-all-functions-into-a-model}
+
+You will now see how the overall model is structured by putting together
+all the building blocks (functions implemented in the previous parts)
+together, in the right order.
+
+\textbf{Exercise:} Implement the model function. Use the following
+notation: - Y\_prediction for your predictions on the test set -
+Y\_prediction\_train for your predictions on the train set - w, costs,
+grads for the outputs of optimize()
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}91}]:} \PY{k}{def} \PY{n+nf}{model}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{Y\PYZus{}test}\PY{p}{,} \PY{n}{num\PYZus{}iterations} \PY{o}{=} \PY{l+m+mi}{2000}\PY{p}{,} \PY{n}{learning\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{print\PYZus{}cost} \PY{o}{=} \PY{k+kc}{False}\PY{p}{)}\PY{p}{:}
+             \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+         \PY{l+s+sd}{    Builds the logistic regression model by calling the function you\PYZsq{}ve implemented previously}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    Arguments:}
+         \PY{l+s+sd}{    X\PYZus{}train \PYZhy{}\PYZhy{} training set represented by a numpy array of shape (num\PYZus{}px * num\PYZus{}px * 3, m\PYZus{}train)}
+         \PY{l+s+sd}{    Y\PYZus{}train \PYZhy{}\PYZhy{} training labels represented by a numpy array (vector) of shape (1, m\PYZus{}train)}
+         \PY{l+s+sd}{    X\PYZus{}test \PYZhy{}\PYZhy{} test set represented by a numpy array of shape (num\PYZus{}px * num\PYZus{}px * 3, m\PYZus{}test)}
+         \PY{l+s+sd}{    Y\PYZus{}test \PYZhy{}\PYZhy{} test labels represented by a numpy array (vector) of shape (1, m\PYZus{}test)}
+         \PY{l+s+sd}{    num\PYZus{}iterations \PYZhy{}\PYZhy{} hyperparameter representing the number of iterations to optimize the parameters}
+         \PY{l+s+sd}{    learning\PYZus{}rate \PYZhy{}\PYZhy{} hyperparameter representing the learning rate used in the update rule of optimize()}
+         \PY{l+s+sd}{    print\PYZus{}cost \PYZhy{}\PYZhy{} Set to true to print the cost every 100 iterations}
+         \PY{l+s+sd}{    }
+         \PY{l+s+sd}{    Returns:}
+         \PY{l+s+sd}{    d \PYZhy{}\PYZhy{} dictionary containing information about the model.}
+         \PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+             \PY{n}{w}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{initialize\PYZus{}with\PYZus{}zeros}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+             
+             \PY{n}{parameters}\PY{p}{,} \PY{n}{grads}\PY{p}{,} \PY{n}{costs} \PY{o}{=} \PY{n}{optimize}\PY{p}{(}\PY{n}{w}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{Y\PYZus{}train}\PY{p}{,} \PY{n}{num\PYZus{}iterations}\PY{p}{,} \PY{n}{learning\PYZus{}rate}\PY{p}{,} \PY{n}{print\PYZus{}cost}\PY{p}{)}
+             
+             \PY{n}{w}\PY{o}{=}\PY{n}{parameters}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+             \PY{n}{b}\PY{o}{=}\PY{n}{parameters}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+             
+             \PY{n}{Y\PYZus{}prediction\PYZus{}test}\PY{o}{=}\PY{n}{predict}\PY{p}{(}\PY{n}{w}\PY{p}{,}\PY{n}{b}\PY{p}{,}\PY{n}{X\PYZus{}test}\PY{p}{)}
+             \PY{n}{Y\PYZus{}prediction\PYZus{}train}\PY{o}{=}\PY{n}{predict}\PY{p}{(}\PY{n}{w}\PY{p}{,}\PY{n}{b}\PY{p}{,}\PY{n}{X\PYZus{}train}\PY{p}{)}
+             
+             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{train accuracy: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{l+m+mi}{100} \PY{o}{\PYZhy{}} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{Y\PYZus{}prediction\PYZus{}train} \PY{o}{\PYZhy{}} \PY{n}{Y\PYZus{}train}\PY{p}{)}\PY{p}{)} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
+             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{test accuracy: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{l+m+mi}{100} \PY{o}{\PYZhy{}} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{Y\PYZus{}prediction\PYZus{}test} \PY{o}{\PYZhy{}} \PY{n}{Y\PYZus{}test}\PY{p}{)}\PY{p}{)} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
+             
+             \PY{n}{d} \PY{o}{=} \PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{costs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{costs}\PY{p}{,}
+                  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Y\PYZus{}prediction\PYZus{}test}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{Y\PYZus{}prediction\PYZus{}test}\PY{p}{,} 
+                  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Y\PYZus{}prediction\PYZus{}train}\PY{l+s+s2}{\PYZdq{}} \PY{p}{:} \PY{n}{Y\PYZus{}prediction\PYZus{}train}\PY{p}{,} 
+                  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{w}\PY{l+s+s2}{\PYZdq{}} \PY{p}{:} \PY{n}{w}\PY{p}{,} 
+                  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{b}\PY{l+s+s2}{\PYZdq{}} \PY{p}{:} \PY{n}{b}\PY{p}{,}
+                  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{learning\PYZus{}rate}\PY{l+s+s2}{\PYZdq{}} \PY{p}{:} \PY{n}{learning\PYZus{}rate}\PY{p}{,}
+                  \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{num\PYZus{}iterations}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{num\PYZus{}iterations}\PY{p}{\PYZcb{}}
+             
+             \PY{k}{return} \PY{n}{d}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}92}]:} \PY{n}{d} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{train\PYZus{}set\PYZus{}x}\PY{p}{,} \PY{n}{train\PYZus{}set\PYZus{}y}\PY{p}{,} \PY{n}{test\PYZus{}set\PYZus{}x}\PY{p}{,} \PY{n}{test\PYZus{}set\PYZus{}y}\PY{p}{,} \PY{n}{num\PYZus{}iterations} \PY{o}{=} \PY{l+m+mi}{2000}\PY{p}{,} \PY{n}{learning\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.005}\PY{p}{,} \PY{n}{print\PYZus{}cost} \PY{o}{=} \PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Cost after iteration 0 : 0.693147
+Cost after iteration 100 : 0.584508
+Cost after iteration 200 : 0.466949
+Cost after iteration 300 : 0.376007
+Cost after iteration 400 : 0.331463
+Cost after iteration 500 : 0.303273
+Cost after iteration 600 : 0.279880
+Cost after iteration 700 : 0.260042
+Cost after iteration 800 : 0.242941
+Cost after iteration 900 : 0.228004
+Cost after iteration 1000 : 0.214820
+Cost after iteration 1100 : 0.203078
+Cost after iteration 1200 : 0.192544
+Cost after iteration 1300 : 0.183033
+Cost after iteration 1400 : 0.174399
+Cost after iteration 1500 : 0.166521
+Cost after iteration 1600 : 0.159305
+Cost after iteration 1700 : 0.152667
+Cost after iteration 1800 : 0.146542
+Cost after iteration 1900 : 0.140872
+[0.94366988 0.86095311 0.88896715 0.93630641 0.74075403 0.52849619
+ 0.03094677 0.85707681 0.88457925 0.67279696 0.26601085 0.4823794
+ 0.74741157 0.78575729 0.00978911 0.9203284  0.02453695 0.84884703
+ 0.2050248  0.03703224 0.92931392 0.11930532 0.01411064 0.7832698
+ 0.58188015 0.66897565 0.75119007 0.01323558 0.03402649 0.99735115
+ 0.21031727 0.78123225 0.6815842  0.46647604 0.66323375 0.03424828
+ 0.08031627 0.76570656 0.34760863 0.06177743 0.6987531  0.4106426
+ 0.6648871  0.02776868 0.93053125 0.46395717 0.23971605 0.9771735
+ 0.66202407 0.10482388]
+[1.96533335e-01 8.97519936e-02 8.90887727e-01 2.05354859e-04
+ 4.10043201e-02 1.13855541e-01 3.58425358e-02 9.20256043e-01
+ 8.11815498e-02 5.09505652e-02 1.43687735e-01 7.77661312e-01
+ 2.37002682e-01 9.26822611e-01 7.20256211e-01 4.54525029e-02
+ 2.88164240e-02 4.96209946e-02 9.53642451e-02 9.27127783e-01
+ 1.46871713e-02 4.42749993e-02 1.99658284e-01 5.10794145e-02
+ 8.71854257e-01 8.54873232e-01 4.43988460e-02 8.41877286e-01
+ 5.57178266e-02 7.39175253e-01 8.73390575e-02 7.61255429e-02
+ 2.01282223e-01 2.02159519e-01 7.95065561e-02 3.69885691e-02
+ 1.14655638e-02 5.90397260e-02 8.36880946e-01 3.33057415e-01
+ 1.98548242e-02 4.46965063e-01 8.23737950e-01 4.13465923e-02
+ 4.61512591e-02 1.21739845e-01 9.76716144e-02 8.07086225e-01
+ 8.93389416e-03 3.73249849e-02 7.53711249e-01 2.47934596e-01
+ 1.47013078e-01 3.93089594e-01 9.02530607e-01 3.94290174e-03
+ 9.38300399e-01 8.14429890e-01 5.51201724e-02 9.56820776e-01
+ 8.35826040e-01 7.75371183e-01 4.97406386e-02 5.05302748e-02
+ 1.68276426e-01 7.39795683e-02 4.23114248e-02 1.80374321e-01
+ 7.36839673e-01 2.36170561e-02 4.78407244e-02 9.72682719e-01
+ 8.87430447e-02 1.40500115e-01 7.39006094e-02 5.87414480e-01
+ 8.55122639e-04 3.51320419e-02 7.21341360e-02 1.59367000e-01
+ 9.18793718e-02 2.76678199e-03 2.16954763e-02 8.75788002e-01
+ 7.48905473e-01 2.61224310e-02 1.31264831e-01 5.58549892e-02
+ 7.96470422e-01 4.31114360e-02 2.46081640e-01 9.28094796e-02
+ 5.13207713e-01 9.23532733e-01 9.11010943e-01 1.56664277e-01
+ 1.40529680e-01 8.72871654e-01 6.33390909e-02 2.04276699e-01
+ 1.50378528e-01 5.42005811e-02 7.16869008e-01 8.93930822e-02
+ 9.68748123e-01 1.16897229e-01 9.65813244e-01 7.63463753e-01
+ 8.45184245e-01 7.94804824e-01 8.77046596e-01 8.92528474e-01
+ 2.33698759e-02 1.08088606e-01 9.41045938e-02 5.06133571e-02
+ 6.14255764e-02 8.74814031e-01 7.14021606e-03 1.49573407e-01
+ 1.38752636e-02 5.75050572e-01 4.74218632e-02 2.67728414e-04
+ 8.16437270e-01 5.25431990e-03 8.27320337e-01 1.63520986e-01
+ 9.19597717e-01 9.11124533e-01 2.96731271e-01 1.37316359e-01
+ 7.56632692e-02 9.51896490e-01 7.13340131e-01 5.62771203e-01
+ 8.46803645e-01 8.81283783e-01 5.80214923e-03 3.24191787e-02
+ 3.66569448e-02 4.24241240e-02 9.02746461e-01 6.95602248e-03
+ 7.28528692e-01 8.04734016e-01 8.48847026e-01 1.97286016e-01
+ 8.73972266e-01 8.56810568e-01 4.60108117e-01 9.98074787e-02
+ 2.67726747e-02 9.16713593e-01 5.70477051e-02 2.34413956e-01
+ 9.17441504e-01 1.43642340e-02 1.48384241e-02 4.18971050e-02
+ 4.81257763e-03 6.74987512e-02 7.96958661e-01 7.94548221e-02
+ 8.88055227e-01 1.63703299e-02 9.64896262e-01 4.74597209e-02
+ 3.78354422e-02 6.75950812e-01 7.60983832e-01 8.91154251e-01
+ 2.15482871e-01 1.80695199e-02 9.46591763e-01 7.71101522e-01
+ 4.14565207e-02 8.02916154e-01 8.02541805e-02 6.89037478e-01
+ 4.92103989e-02 4.87010785e-02 1.89987579e-02 3.71043577e-02
+ 1.73595068e-03 7.71575747e-01 4.06433366e-02 6.60606392e-02
+ 8.34508562e-01 2.27408842e-02 6.17839573e-02 4.56149270e-02
+ 7.64947622e-01 6.19347921e-02 3.55887869e-03 1.03103435e-01
+ 3.83745905e-01 8.77909931e-01 7.72818586e-02 1.79082665e-02
+ 8.09911232e-01 2.02130387e-02 1.89353139e-02 1.83142729e-02
+ 1.94041166e-01 2.01151983e-01 8.48224028e-02 1.61929290e-01
+ 1.82858623e-01]
+train accuracy: 99.04306220095694 \%
+test accuracy: 70.0 \%
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}94}]:} \PY{c+c1}{\PYZsh{} Example of a picture that was wrongly classified.}
+         \PY{n}{index} \PY{o}{=} \PY{l+m+mi}{1}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{test\PYZus{}set\PYZus{}x}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{index}\PY{p}{]}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{p}{(}\PY{n}{num\PYZus{}px}\PY{p}{,} \PY{n}{num\PYZus{}px}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{y = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{test\PYZus{}set\PYZus{}y}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{index}\PY{p}{]}\PY{p}{)} \PY{o}{+} 
+                \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{, you predicted that it is a }\PY{l+s+se}{\PYZbs{}\PYZdq{}}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+}
+                \PY{n}{classes}\PY{p}{[}\PY{n+nb}{int}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Y\PYZus{}prediction\PYZus{}test}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{index}\PY{p}{]}\PY{p}{)}\PY{p}{]}\PY{o}{.}\PY{n}{decode}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{utf\PYZhy{}8}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{o}{+} 
+                \PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}\PYZdq{}}\PY{l+s+s2}{ picture.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+y = 1, you predicted that it is a "cat" picture.
+
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_35_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}95}]:} \PY{c+c1}{\PYZsh{} Plot learning curve (with costs)}
+         \PY{n}{costs} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{squeeze}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{costs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{costs}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cost}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iterations (per hundreds)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Learning rate =}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{d}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{learning\PYZus{}rate}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_36_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsection{6 - Further analysis (optional/ungraded
+exercise)}\label{further-analysis-optionalungraded-exercise}
+
+Congratulations on building your first image classification model. Let's
+analyze it further, and examine possible choices for the learning rate
+\(\alpha\).
+
+    \paragraph{Choice of learning rate}\label{choice-of-learning-rate}
+
+\textbf{Reminder}: In order for Gradient Descent to work you must choose
+the learning rate wisely. The learning rate \(\alpha\) determines how
+rapidly we update the parameters. If the learning rate is too large we
+may "overshoot" the optimal value. Similarly, if it is too small we will
+need too many iterations to converge to the best values. That's why it
+is crucial to use a well-tuned learning rate.
+
+Let's compare the learning curve of our model with several choices of
+learning rates. Run the cell below. This should take about 1 minute.
+Feel free also to try different values than the three we have
+initialized the \texttt{learning\_rates} variable to contain, and see
+what happens.
 
 
     % Add a bibliography block to the postdoc
